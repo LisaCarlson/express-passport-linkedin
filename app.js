@@ -54,6 +54,10 @@ passport.use(new LinkedInStrategy({
   done(null, {id: profile.id, displayName: profile.displayName})
 }));
 
+app.use(function (req, res, next) {
+  res.locals.user = req.user
+  next()
+});
 app.use('/', routes);
 app.use('/users', users);
 
