@@ -47,7 +47,7 @@ passport.deserializeUser(function(user, done) {
 passport.use(new LinkedInStrategy({
   clientID: process.env.CLIENTID,
   clientSecret: process.env.CLIENTSECRET,
-  callbackURL: "http://localhost:3000/auth/linkedin/callback" || process.env.HOST + "/auth/linkedin/callback",
+  callbackURL: process.env.HOST + "/auth/linkedin/callback" || "http://localhost:3000/auth/linkedin/callback",
   scope: ['r_emailaddress', 'r_basicprofile'],
   state: true
 }, function(accessToken, refreshToken, profile, done) {
