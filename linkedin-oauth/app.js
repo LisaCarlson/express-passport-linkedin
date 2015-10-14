@@ -6,9 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 var passport = require('passport');
+require('dotenv').load();
 passport.use(new LinkedInStrategy({
-  clientID: '78mmra7itamqi2',
-  clientSecret: 'wg93bK7c0noHJzzJ',
+  clientID: process.env.CLIENTID,
+  clientSecret: process.env.CLIENTSECRET,
   callbackURL: "http://127.0.0.1:3000/auth/linkedin/callback",
   scope: ['r_emailaddress', 'r_basicprofile'],
 }, function(accessToken, refreshToken, profile, done) {
