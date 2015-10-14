@@ -47,17 +47,18 @@ passport.deserializeUser(function(user, done) {
 passport.use(new LinkedInStrategy({
   clientID: process.env.CLIENTID,
   clientSecret: process.env.CLIENTSECRET,
-  callbackURL: process.env.HOST + "/auth/linkedin/callback" || "http://localhost:3000/auth/linkedin/callback",
+  callbackURL: "http://localhost:3000/auth/linkedin/callback",
   scope: ['r_emailaddress', 'r_basicprofile'],
   state: true
 }, function(accessToken, refreshToken, profile, done) {
-  done(null, {id: profile.id, displayName: profile.displayName})
+  done(null, {id: profile.id, displayName: profile.displayName, token: accessToken})
 }));
 
 app.use(function (req, res, next) {
   res.locals.user = req.user;
   next();
 });
+
 app.use('/', routes);
 app.use('/users', users);
 
