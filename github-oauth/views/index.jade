@@ -1,5 +1,10 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  if user
+    p Hello #{user.githubId}
+    a(href="/logout") Logout
+  else
+    p please login
+    p
+      a(href="/auth/github") Login

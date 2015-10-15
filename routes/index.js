@@ -7,7 +7,6 @@ var unirest = require('unirest');
 //   res.render('index', { title: 'Express' });
 // });
 router.get('/', function(req, res, next) {
-  console.log(req.user);
   if(req.isAuthenticated()) {
     unirest.get('https://api.linkedin.com/v1/people/~:(id,num-connections,picture-url)')
       .header('Authorization', 'Bearer ' + req.user.token)
