@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  if user
+    p Hello #{user.displayName}
+    a(href="/logout") Logout
+  if profile
+    img(src=profile.pictureUrl)
+  else
+    p please login
+    p
+      a(href="/auth/linkedin") Login
