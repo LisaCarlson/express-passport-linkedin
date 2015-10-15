@@ -4,13 +4,13 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
-var passport = require('passport');
+var GitHubStrategy = require('passport-github').Strategy;
 var cookieSession = require('cookie-session');
-require('dotenv').load();
+var passport = require('passport');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+require('dotenv').load();
 
 var app = express();
 
@@ -39,48 +39,43 @@ app.use(passport.session());
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
-passport.deserializeUser(function(user, done) {
-  done(null, user)
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
 });
 
-app.use(function (req, res, next) {
-  res.locals.user = req.user;
-  next();
-});
+passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: "http://127.0.0.1:3000/auth/github/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    done(null, {githubId: profile.id, token: accessToken})
+  }));
 
-passport.use(new LinkedInStrategy({
-  clientID: process.env.CLIENTID,
-  clientSecret: process.env.CLIENTSECRET,
-  callbackURL: "http://localhost:3000/auth/linkedin/callback",
-  scope: ['r_emailaddress', 'r_basicprofile'],
-  state: true
-}, function(accessToken, refreshToken, profile, done) {
-  done(null, {id: profile.id, displayName: profile.displayName, token: accessToken})
-}));
+
 
 
 
 app.use('/', routes);
 app.use('/users', users);
 
+app.get('/auth/github',
+  passport.authenticate('github', { scope: [ 'user:email' ] }));
 
-app.get('/auth/linkedin',
-  passport.authenticate('linkedin'),
-    function(req, res){
-      // The request will be redirected to LinkedIn for authentication, so this
-      // function will not be called.
-    });
-
-app.get('/auth/linkedin/callback', passport.authenticate('linkedin', {
-  successRedirect: '/',
-  failureRedirect: '/login'
-}));
+app.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
+
 // error handlers
 
 // development error handler
